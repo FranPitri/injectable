@@ -1,12 +1,8 @@
 import 'package:example/services/abstract_service.dart';
 import 'package:injectable/injectable.dart';
 
-import '../injector/injector.dart';
-
-// @module
+@module
 abstract class RegisterModule {
-  @prod
-  @platformMobile
   @Injectable(as: Repo)
   RepoImpl get repo;
 

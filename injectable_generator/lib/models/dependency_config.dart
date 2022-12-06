@@ -2,7 +2,6 @@
 // to be used later when generating the register function
 
 import 'package:collection/collection.dart';
-import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/module_config.dart';
 
 import '../injectable_types.dart';
@@ -20,11 +19,15 @@ class DependencyConfig {
   final bool? signalsReady;
   final List<String> environments;
   final String? constructorName;
+  final String? postConstruct;
   final bool isAsync;
+  final bool postConstructReturnsSelf;
   final List<ImportableType> dependsOn;
   final bool preResolve;
   final ModuleConfig? moduleConfig;
   final DisposeFunctionConfig? disposeFunction;
+  final int orderPosition;
+  final String? scope;
 
   const DependencyConfig({
     required this.type,
@@ -40,15 +43,22 @@ class DependencyConfig {
     this.preResolve = false,
     this.moduleConfig,
     this.disposeFunction,
+    this.orderPosition = 0,
+    this.scope,
+    this.postConstructReturnsSelf = false,
+    this.postConstruct,
   });
 
   // used for testing
   factory DependencyConfig.factory(String type,
-      {List<String> deps = const [], List<String> envs = const []}) {
+      {List<String> deps = const [],
+      List<String> envs = const [],
+      int order = 0}) {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: type),
       environments: envs,
+      orderPosition: order,
       dependencies: deps
           .map(
             (e) => InjectedDependency(
@@ -59,13 +69,15 @@ class DependencyConfig {
           .toList(),
     );
   }
+
   // used for testing
   factory DependencyConfig.singleton(String type,
-      {List<String> deps = const []}) {
+      {List<String> deps = const [], int order = 0}) {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: type),
       injectableType: InjectableType.singleton,
+      orderPosition: order,
       dependencies: deps
           .map(
             (e) => InjectedDependency(
@@ -79,7 +91,7 @@ class DependencyConfig {
 
   @override
   String toString() {
-    return 'DependencyConfig{type: $type, typeImpl: $typeImpl, dependencies: $dependencies, injectableType: $injectableType, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, isAsync: $isAsync, dependsOn: $dependsOn, preResolve: $preResolve, moduleConfig: $moduleConfig}';
+    return 'DependencyConfig{type: $type, typeImpl: $typeImpl, dependencies: $dependencies, injectableType: $injectableType, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, isAsync: $isAsync, dependsOn: $dependsOn, preResolve: $preResolve, moduleConfig: $moduleConfig,scope: $scope}';
   }
 
   @override
@@ -99,7 +111,11 @@ class DependencyConfig {
           ListEquality().equals(dependsOn, other.dependsOn) &&
           preResolve == other.preResolve &&
           disposeFunction == other.disposeFunction &&
-          moduleConfig == other.moduleConfig);
+          scope == other.scope &&
+          moduleConfig == other.moduleConfig &&
+          postConstruct == other.postConstruct &&
+          postConstructReturnsSelf == other.postConstructReturnsSelf &&
+          orderPosition == other.orderPosition);
 
   @override
   int get hashCode =>
@@ -115,7 +131,11 @@ class DependencyConfig {
       ListEquality().hash(dependsOn) ^
       preResolve.hashCode ^
       disposeFunction.hashCode ^
-      moduleConfig.hashCode;
+      moduleConfig.hashCode ^
+      orderPosition.hashCode ^
+      postConstruct.hashCode ^
+      postConstructReturnsSelf.hashCode ^
+      scope.hashCode;
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;
@@ -153,11 +173,15 @@ class DependencyConfig {
       signalsReady: json['signalsReady'],
       environments: json['environments']?.cast<String>(),
       constructorName: json['constructorName'],
+      postConstruct: json['postConstruct'],
       isAsync: json['isAsync'] as bool,
       dependsOn: dependsOn,
       preResolve: json['preResolve'] as bool,
+      postConstructReturnsSelf: json['postConstructReturnsSelf'] as bool,
       moduleConfig: moduleConfig,
       disposeFunction: disposeFunction,
+      orderPosition: json['orderPosition'] as int,
+      scope: json['scope'] as String?,
     );
   }
 
@@ -165,6 +189,7 @@ class DependencyConfig {
         'type': type.toJson(),
         'typeImpl': typeImpl.toJson(),
         "isAsync": isAsync,
+        "postConstructReturnsSelf": postConstructReturnsSelf,
         "preResolve": preResolve,
         "injectableType": injectableType,
         if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
@@ -176,6 +201,9 @@ class DependencyConfig {
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (constructorName != null) "constructorName": constructorName,
+        if (postConstruct != null) "postConstruct": postConstruct,
+        "orderPosition": orderPosition,
+        if (scope != null) "scope": scope,
       };
 
   bool get isFromModule => moduleConfig != null;

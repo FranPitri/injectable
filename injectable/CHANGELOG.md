@@ -1,4 +1,23 @@
 # ChangeLog
+## [2.1.0]
+- Add support for micro package modules order [before,after]
+- Add support for micro package modules scopes
+## [2.0.1]
+- Fix registration order #324
+- Fix some types in readme file
+## [2.0.0] [Minor breaking changes]
+- Add support for micro packages
+- Add support for external package modules
+- Add support for manual dependencies ordering thanks to @casvanluijtelaar
+- Add support for GetIt scopes
+- Add @PostConstruct annotation to execute sync/async code after construction
+- Add preResolve to @FactoryMethod annotation              
+- Add throwOnMissingDependencies flag to @InjectableInit annotation
+- Change asExtension default value to true [breaking change] 
+- Change initializerName default value to 'init' [breaking change]
+## [1.5.3]
+- Sync injectable and injectable_generator with GetIt v7.2.0 to generate non-nullable @factoryParams
+- Migrate to analyzer 3.0.0
 ## [1.5.0]
 Use getAsync for async injected dependencies, fixes #230
 Add support for function factory params, fixes #224
@@ -42,8 +61,8 @@ Fix some readme typos
 - Add support for get_it ^5.0
 - Fix analyzer compatibility issues
 ## [1.0.4]
-- Add option to customize the initilizer function name
-- Add option to generate the initilizer function as an extension
+- Add option to customize the initializer function name
+- Add option to generate the initializer function as an extension
 - Change initializer functions returns the passed get_it instance instead of void
 - Add Advanced environment filter that can be extended and customized
 - Fix Injectable generator not handling multiple instances of generic types #107

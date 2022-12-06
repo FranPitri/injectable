@@ -59,7 +59,10 @@ void main() {
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             isAsync: true,
-            dependsOn: [ImportableType(name: 'Storage'), ImportableType(name: 'LocalRepo')],
+            dependsOn: [
+              ImportableType(name: 'Storage'),
+              ImportableType(name: 'LocalRepo')
+            ],
           )),
           "gh.singletonAsync<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);");
     });
@@ -71,7 +74,10 @@ void main() {
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             isAsync: false,
-            dependsOn: [ImportableType(name: 'Storage'), ImportableType(name: 'LocalRepo')],
+            dependsOn: [
+              ImportableType(name: 'Storage'),
+              ImportableType(name: 'LocalRepo')
+            ],
           )),
           'gh.singletonWithDependencies<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);');
     });
@@ -91,7 +97,7 @@ void main() {
               )
             ],
           )),
-          'gh.singleton<Demo>(Demo(get<Storage>()));');
+          'gh.singleton<Demo>(Demo(gh<Storage>()));');
     });
 
     test("Singleton generator with async Positional dependencies", () {
@@ -118,7 +124,7 @@ void main() {
         ),
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.singletonAsync<Demo>(() async  => Demo( await get.getAsync<Storage>()));');
+          'gh.singletonAsync<Demo>(() async  => Demo( await gh.getAsync<Storage>()));');
     });
 
     test("Singleton generator with named dependencies", () {
@@ -136,7 +142,7 @@ void main() {
               )
             ],
           )),
-          'gh.singleton<Demo>(Demo(storage: get<Storage>()));');
+          'gh.singleton<Demo>(Demo(storage: gh<Storage>()));');
     });
 
     test("Singleton generator with async named dependencies", () {
@@ -165,7 +171,7 @@ void main() {
         ),
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.singletonAsync<Demo>(() async  => Demo(storage:  await get.getAsync<Storage>(instanceName: \'storageImpl\')));');
+          'gh.singletonAsync<Demo>(() async  => Demo(storage:  await gh.getAsync<Storage>(instanceName: \'storageImpl\')));');
     });
     test("Singleton generator with async & preResolve named dependencies", () {
       final dep = DependencyConfig(
@@ -194,13 +200,17 @@ void main() {
         ),
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.singleton<Demo>(Demo(storage: get<Storage>(instanceName: \'storageImpl\')));');
+          'gh.singleton<Demo>(Demo(storage: gh<Storage>(instanceName: \'storageImpl\')));');
     });
   });
 }
 
 String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
-  final generator = LibraryGenerator(dependencies: allDeps ?? [], initializerName: 'initGetIt');
+  final generator = InitMethodGenerator(
+    scopeDependencies: allDeps ?? [],
+    allDependencies: allDeps?.toSet() ?? {},
+    initializerName: 'init',
+  );
   final statement = generator.buildSingletonRegisterFun(input);
   final emitter = DartEmitter(
     allocator: Allocator.none,

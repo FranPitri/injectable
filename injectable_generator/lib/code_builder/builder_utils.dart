@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:collection/collection.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
@@ -6,11 +7,12 @@ import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 
 Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
   // sort dependencies alphabetically
-  deps.sort((a, b) => a.type.name.compareTo(b.type.name));
+  deps.sortBy((e) => e.type.name);
   // sort dependencies by their register order
   final Set<DependencyConfig> sorted = {};
   _sortByDependents(deps.toSet(), sorted);
-  return sorted;
+  // sort dependencies by their orderPosition
+  return sorted.sortedBy<num>((e) => e.orderPosition).toSet();
 }
 
 void _sortByDependents(
@@ -80,28 +82,26 @@ bool hasAsyncDependency(DependencyConfig dep, Set<DependencyConfig> allDeps) {
 
 DependencyConfig? lookupDependency(
     InjectedDependency iDep, Set<DependencyConfig> allDeps) {
-  try {
-    return allDeps.firstWhere(
-        (d) => d.type == iDep.type && d.instanceName == iDep.instanceName);
-  } on StateError {}
-  return null;
+  return allDeps.firstWhereOrNull(
+    (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
+  );
 }
 
 DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps, List<String> envs) {
-  try {
-    return allDeps.firstWhere(
-      (d) =>
-          d.type == iDep.type &&
-          d.instanceName == iDep.instanceName &&
-          (d.environments.isEmpty ||
-              envs.isEmpty ||
-              d.environments.any(
-                (e) => envs.contains(e),
-              )),
-    );
-  } on StateError {}
-  return null;
+  InjectedDependency iDep,
+  Set<DependencyConfig> allDeps,
+  List<String> envs,
+) {
+  return allDeps.firstWhereOrNull(
+    (d) =>
+        d.type == iDep.type &&
+        d.instanceName == iDep.instanceName &&
+        (d.environments.isEmpty ||
+            envs.isEmpty ||
+            d.environments.any(
+              (e) => envs.contains(e),
+            )),
+  );
 }
 
 Set<DependencyConfig> lookupPossibleDeps(

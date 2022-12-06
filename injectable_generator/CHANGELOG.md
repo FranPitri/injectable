@@ -1,4 +1,32 @@
 # ChangeLog
+## [2.1.3]
+- Fix name of MicroPackageModule contains "_" (is not pascal case) #332
+## [2.1.2]
+- Fix registration order
+## [2.1.1]
+- Fix barrel files related issue
+## [2.1.0]
+- Add support for micro package modules order [before,after]
+- Add support for micro package modules scopes
+## [2.0.1] 
+- Fix registration order #324
+## [2.0.0] [Minor breaking changes]
+- Add support for micro packages
+- Add support for external package modules
+- Add support for manual dependencies ordering thanks to @casvanluijtelaar
+- Add support for GetIt scopes
+- Add @PostConstruct annotation to execute sync/async code after construction
+- Add preResolve to @FactoryMethod annotation
+- Add throwOnMissingDependencies flag to @InjectableInit annotation
+- Change asExtension default value to true [breaking change]
+- Change initializerName default value to 'init' [breaking change]
+## [1.5.5]
+- Bump up analyzer version
+## [1.5.4]
+- Bump up analyzer version
+## [1.5.3]
+- Sync injectable and injectable_generator with GetIt v7.2.0 to generate non-nullable @factoryParams
+- Migrate to analyzer 3.0.0
 ## [1.5.2]
 Fix yet another registration order issue #244
 ## [1.5.1]
@@ -13,19 +41,19 @@ Update analyzer version #228
 Add ignore types in packages support 
 Fix some readme typos
 ## [1.4.1]
-- Pomp up build_runner version to 2.0.3
+- Bump up build_runner version to 2.0.3
 - Fix generator crash when using inline environments #205
 ## [1.4.0]
-- Pomp up get_it version to range to 7.0.0 <= 8.0.0
-- Pomp up build_runner version to 2.0.2
+- Bump up get_it version to range to 7.0.0 <= 8.0.0
+- Bump up build_runner version to 2.0.2
 ## [1.3.0]
 - Include merge that fixes #194
-- Pomp up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0 
+- Bump up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0 
 ## [1.2.2]
 - Fix generator crash after 1.2.1 update
 - Add option to ignore missing type warning for specified types
 ## [1.2.1]
-- Pomp up versions of build, build_runner, dart_style and source_gen
+- Bump up versions of build, build_runner, dart_style and source_gen
 - Fix named instances are ignored when sorting dependencies. 
 - Clean up some code
 ## [1.2.0]
@@ -51,8 +79,8 @@ Fix some readme typos
 - Add support for get_it ^5.0
 - Fix analyzer compatibility issues
 ## [1.0.4]
-- Add option to customize the initilizer function name
-- Add option to generate the initilizer function as an extension
+- Add option to customize the initializer function name
+- Add option to generate the initializer function as an extension
 - Change initializer functions returns the passed get_it instance instead of void
 - Add Advanced environment filter that can be extended and customized
 - Fix Injectable generator not handling multiple instances of generic types #107
