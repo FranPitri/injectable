@@ -1,3 +1,4 @@
+<h1>Injectable</h1>
 <p >    
 <a href="https://img.shields.io/badge/License-MIT-green"><img     
 align="center" src="https://img.shields.io/badge/License-MIT-green" alt="MIT License"></a>      
@@ -687,7 +688,7 @@ void configureDependencies() {}
 
 then a scope initialization method/extension will be generated.
 ```dart
- await getIt.initAwesomeScope();  
+ await getIt.initAwesomeScope()
 ```
 
 ## Problems with the generation?
